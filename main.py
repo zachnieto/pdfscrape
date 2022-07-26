@@ -1,3 +1,4 @@
+import os
 import re
 
 import xlwings as xw
@@ -5,12 +6,12 @@ from PyPDF2 import PdfReader
 
 
 class Scrape:
-    MAX_DISTANCE = 20  # chars
+    MAX_DISTANCE = 50  # chars
 
     def __init__(self, pdf):
-        self.wb = xw.Book(r"keywords.xlsx")
+        self.wb = xw.Book(r"keywords.xlsm")
         self.sheet = self.wb.sheets[0]
-        self.keywords = [kwarg for kwarg in self.sheet.range("A:A")[1:500].value if kwarg]
+        self.keywords = [kwarg for kwarg in self.sheet.range("H:H")[7:15].value if kwarg]
 
         print(f"Keywords: {', '.join(self.keywords)}")
 
@@ -42,14 +43,13 @@ class Scrape:
             elif abs(prev_val[1] - match[1]) > (dist := abs(next_val[1] - match[1])) and dist < Scrape.MAX_DISTANCE:
                 print(f"{match[0]} - {next_val[0]}")
 
-    @staticmethod
-    def log_match(key, value):
-        print(f"{key} - {value}")
-
-    @staticmethod
-    def word_is_value(word):
-        return word.replace('.', '', 1).isdigit()
-
 
 if __name__ == "__main__":
-    Scrape("term-loan-credit-agreement.pdf")
+    while 1:
+        pdf = input("PDF filename: ")
+        if os.path.exists(pdf):
+            break
+        print("File not found, please try again")
+
+    Scrape(pdf)
+    input("Press enter to exit...")
